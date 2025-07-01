@@ -1,5 +1,3 @@
-import torch
-
 import genesis as gs
 from genesis.utils.image_exporter import FrameImageExporter
 
@@ -20,7 +18,6 @@ def main():
         rigid_options=gs.options.RigidOptions(enable_collision=False, gravity=(0, 0, 0)),
         renderer=gs.options.renderers.BatchRenderer(
             use_rasterizer=False,
-            batch_render_res=(1920, 1080),
         ),
     )
 
@@ -158,12 +155,12 @@ def main():
     horizon = 10
 
     # Create an image exporter
-    output_dir = "img_output/test"
+    output_dir = "img_output/demo"
     exporter = FrameImageExporter(output_dir)
 
     for i in range(horizon):
         scene.step()
-        rgb, depth, _, _ = scene.render_all_cams()
+        rgb, depth, _, _ = scene.render_all_cameras()
         exporter.export_frame_all_cameras(i, rgb=rgb, depth=depth)
 
 
