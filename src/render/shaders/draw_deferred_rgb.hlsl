@@ -7,18 +7,34 @@ DeferredLightingPushConstBR pushConst;
 
 // This is an array of all the textures
 [[vk::binding(0, 0)]]
-RWTexture2DArray<float4> vizBuffer[];
+// RWTexture2DArray<float4> vizBuffer[];
+RWTexture2DArray<float4> rgbInBuffer[];
 
 [[vk::binding(1, 0)]]
-RWStructuredBuffer<uint32_t> rgbOutputBuffer;
-
-[[vk::binding(2, 0)]]
-RWStructuredBuffer<float> depthOutputBuffer;
-
-[[vk::binding(3, 0)]]
+// RWStructuredBuffer<uint32_t> rgbOutputBuffer;
 Texture2D<float> depthInBuffer[];
 
+[[vk::binding(2, 0)]]
+// RWStructuredBuffer<float> depthOutputBuffer;
+Texture2D<float4> normalInBuffer[];
+
+[[vk::binding(3, 0)]]
+// Texture2D<float> depthInBuffer[];
+RWTexture2DArray<int> segmentationInBuffer[];
+
 [[vk::binding(4, 0)]]
+RWStructuredBuffer<uint32_t> rgbOutputBuffer;
+
+[[vk::binding(5, 0)]]
+RWStructuredBuffer<float> depthOutputBuffer;
+
+[[vk::binding(6, 0)]]
+RWStructuredBuffer<uint32_t> normalOutputBuffer;
+
+[[vk::binding(7, 0)]]
+RWStructuredBuffer<int> segmentationOutputBuffer;
+
+[[vk::binding(8, 0)]]
 SamplerState linearSampler;
 
 // Instances and views
@@ -41,11 +57,14 @@ StructuredBuffer<RenderOptions> renderOptionsBuffer;
 float calculateLinearDepth(float depth_in)
 {
     // Calculate linear depth with reverse-z buffer
+    // depth_in = max(min(1.0, depth_in), 0.95);
+    depth_in = max(min(1.0, depth_in), 0.9);
+
     PerspectiveCameraData cam_data = unpackViewData(viewDataBuffer[0]);
     float z_near = cam_data.zNear;
     float z_far = cam_data.zFar;
-    float linear_depth = z_far * z_near / (z_near - depth_in * (z_near - z_far));
-
+    float linear_depth = (z_near * z_far) / (z_far + depth_in * (z_near - z_far));
+    
     return linear_depth;
 }
 
@@ -119,16 +138,16 @@ void lighting(uint3 idx : SV_DispatchThreadID)
         view_idx * pushConst.viewWidth * pushConst.viewHeight +
         idx.y * pushConst.viewWidth + idx.x;
 
-    if (renderOptionsBuffer[0].outputRGB) {
+    if (renderOptionsBuffer[0].outputs[0]) { // RGB
 
-        float4 color = vizBuffer[target_idx][vbuffer_pixel + 
+        float4 color = rgbInBuffer[target_idx][vbuffer_pixel + 
                          uint3(pixel_offset.xy, 0)];
         float3 out_color = color.rgb;
 
         rgbOutputBuffer[out_pixel_idx] = linearToSRGB8(out_color); 
     }
 
-    if (renderOptionsBuffer[0].outputDepth) 
+    if (renderOptionsBuffer[0].outputs[1])  // Depth
     {
         uint2 depth_dim;
         depthInBuffer[target_idx].GetDimensions(depth_dim.x, depth_dim.y);
@@ -142,5 +161,23 @@ void lighting(uint3 idx : SV_DispatchThreadID)
         float linear_depth = calculateLinearDepth(depth_in);
 
         depthOutputBuffer[out_pixel_idx] = linear_depth;
+    }
+
+    if (renderOptionsBuffer[0].outputs[2]) {    // Normal
+        uint2 normal_dim;
+        normalInBuffer[target_idx].GetDimensions(normal_dim.x, normal_dim.y);
+
+        float2 normal_uv = (float2(vbuffer_pixel.xy) + float2(pixel_offset.xy) + 0.5) /
+                            float2(normal_dim.xy);
+        float3 normal_in = normalInBuffer[target_idx].SampleLevel(
+                           linearSampler, normal_uv, 0).xyz;
+        normalOutputBuffer[out_pixel_idx] = float3ToUint32(normal_in);
+    }
+
+    if (renderOptionsBuffer[0].outputs[3]) {    // Segmentation
+        int out_segmentation = segmentationInBuffer[target_idx][
+            vbuffer_pixel + uint3(pixel_offset.xy, 0)
+        ];
+        segmentationOutputBuffer[out_pixel_idx] = out_segmentation;
     }
 }

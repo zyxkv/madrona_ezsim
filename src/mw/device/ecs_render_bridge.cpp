@@ -10,7 +10,7 @@ extern "C" __global__ void initBVHParams(madrona::BVHParams *params,
                                          void *timings,
                                          void *materials,
                                          void *textures,
-                                         float near_sphere,
+                                        //  float near_sphere,
                                          uint32_t num_sms,
                                          uint32_t sm_shared_memory)
 {
@@ -70,6 +70,12 @@ extern "C" __global__ void initBVHParams(madrona::BVHParams *params,
     params->depthOutput = (void *)mgr->getArchetypeComponent<
         RaycastOutputArchetype, render::DepthOutputBuffer>();
 
+    params->normalOutput = (void *)mgr->getArchetypeComponent<
+        RaycastOutputArchetype, render::NormalOutputBuffer>();
+
+    params->segmentationOutput = (void *)mgr->getArchetypeComponent<
+        RaycastOutputArchetype, render::SegmentationOutputBuffer>();
+
     params->renderOutputWidth = 
         mwGPU::GPUImplConsts::get().raycastOutputWidth;
     params->renderOutputHeight = 
@@ -85,7 +91,7 @@ extern "C" __global__ void initBVHParams(madrona::BVHParams *params,
 
     params->textures = (cudaTextureObject_t *)textures;
 
-    params->nearSphere = near_sphere;
+    // params->nearSphere = near_sphere;
 
     params->raycastRGBD = raycast_rgbd;
 

@@ -251,6 +251,7 @@ inline void instanceTransformUpdateWithMat(Context &ctx,
         ((uint64_t)ctx.worldID().idx << 32) | (uint64_t)e.id;
 
     InstanceData &data = system_state.instancesCPU[instance_id];
+    printf("instanceID=%d\n", instance_id);
 #endif
 
     data.position = pos;
@@ -411,19 +412,27 @@ void registerTypes(ECSRegistry &registry,
 
     uint32_t rgb_output_bytes = render_output_width * render_output_height * 4;
     uint32_t depth_output_bytes = render_output_width * render_output_height * 4;
+    uint32_t normal_output_bytes = render_output_width * render_output_height * 4;
+    uint32_t segmentation_output_bytes = render_output_width * render_output_height * 4;
 
     // Make sure to have something there even if raycasting was disabled.
     if (depth_output_bytes == 0) {
         rgb_output_bytes = 4;
         depth_output_bytes = 4;
+        normal_output_bytes = 4;
+        segmentation_output_bytes = 4;
     } else if (mwGPU::GPUImplConsts::get().raycastRGBD == 0) {
         // Depth always renders whether we're in RGBD or Depth so we just 
         // disable RGB rendering.
         rgb_output_bytes = 4;
+        normal_output_bytes = 4;
+        segmentation_output_bytes = 4;
     }
 #else
     uint32_t rgb_output_bytes = 4;
     uint32_t depth_output_bytes = 4;
+    uint32_t normal_output_bytes = 4;
+    uint32_t segmentation_output_bytes = 4;
 #endif
 
     registry.registerComponent<RenderCamera>();
@@ -445,6 +454,8 @@ void registerTypes(ECSRegistry &registry,
 
     registry.registerComponent<RGBOutputBuffer>(rgb_output_bytes);
     registry.registerComponent<DepthOutputBuffer>(depth_output_bytes);
+    registry.registerComponent<NormalOutputBuffer>(normal_output_bytes);
+    registry.registerComponent<SegmentationOutputBuffer>(segmentation_output_bytes);
 
     registry.registerComponent<RenderOutputIndex>();
 

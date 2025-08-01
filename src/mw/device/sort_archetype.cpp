@@ -168,7 +168,11 @@ struct BlockRadixRankMatchEarlyCountsCustom
                 for (int u = 0; u < WARP_BINS_PER_THREAD; ++u)
                 {
                     int bin = lane + u * WARP_THREADS;
-                    bins[u] = internal::ThreadReduce(warp_histograms[bin], Sum());
+                    // bins[u] = internal::ThreadReduce(warp_histograms[bin], Sum());
+                    // TODO: need to verify, maybe cccl version different
+                    bins[u] = ThreadReduce(warp_histograms[bin], Sum());
+                    // bins[u] = ThreadReduce(warp_histograms[bin], Sum(), WARP_MASK, WARP_THREADS);
+
                 }
                 CTA_SYNC();
 
