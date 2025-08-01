@@ -160,7 +160,7 @@ struct BatchFrame {
         vk::MemoryAllocator &alloc,
         bool allocate
     );
-}
+};
 
 struct BatchRenderInfo {
     uint32_t numViews;

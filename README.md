@@ -81,14 +81,18 @@ pip install gs-madrona
 ```sh
 git clone --recurse-submodules https://github.com/Genesis-Embodied-AI/gs-madrona.git
 cd gs-madrona
-pip install .
+pip install --no-build-isolation -Cbuild-dir=build -v -e .
 ```
+
+Make sure that the version of `torch` installed on your system that has been pre-compiled against a version of CUDA Toolkit that is equal or newer than the one available on your system. Otherwise, gs-madrona will crash at import (segmentation fault). Please follow the [official instructions](https://pytorch.org/get-started/locally/)
 
 ### Testing (Optional)
 1. Clone Genesis Simulator repository if not already done
 ```sh
 git clone https://github.com/Genesis-Embodied-AI/Genesis.git
 ```
+
+
 
 2. Run the following example script provided with Genesis
 ```sh
