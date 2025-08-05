@@ -682,15 +682,15 @@ Manager::Impl * Manager::Impl::make(
     Optional<CudaBatchRenderConfig> render_cfg = 
         Optional<CudaBatchRenderConfig>::none();
     if (use_rt) {
-        render_cfg = {
+        render_cfg.emplace(CudaBatchRenderConfig {
             .renderMode = CudaBatchRenderConfig::RenderMode::RGBD,
             .geoBVHData = rt_assets.bvhData,
             .materialData = rt_assets.matData,
             .renderWidth = mgr_cfg.batchRenderViewWidth,
             .renderHeight = mgr_cfg.batchRenderViewHeight,
-            .nearPlane = 0.001f,
-            .farPlane = 1000.0f,
-        };
+            // .nearPlane = 0.001f,
+            // .farPlane = 1000.0f,
+        });
     }
 
     std::vector<std::string> hideseek_srcs = {

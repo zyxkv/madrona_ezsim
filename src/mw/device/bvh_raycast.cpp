@@ -850,8 +850,7 @@ static __device__ TraceResult traceRay(
     return result;
 }
 
-static __device__ void writeRGB(uint32_t pixel_byte_offset,
-                           const Vector3 &color)
+static __device__ void writeRGB(uint32_t pixel_byte_offset, const Vector3 &color)
 {
     uint8_t *rgb_out = (uint8_t *)bvhParams.rgbOutput + pixel_byte_offset;
 

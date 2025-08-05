@@ -2616,6 +2616,8 @@ static ViewerRendererState initState(RenderContext &rctx,
                 //   rctx.batchRenderer->getDepthBuffer(),
                   rctx.batchRenderer->getComponentBuffer(0, ComponentNames::RGB),
                   rctx.batchRenderer->getComponentBuffer(0, ComponentNames::Depth),
+                //   rctx.batchRenderer->getComponentBuffer(0, ComponentNames::Normal),
+                //   rctx.batchRenderer->getComponentBuffer(0, ComponentNames::Segmentation),
                 );
     }
 

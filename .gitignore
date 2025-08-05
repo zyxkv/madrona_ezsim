@@ -28,3 +28,8 @@ venv/
 # Miscellaneous
 .DS_Store
 Thumbs.db
+
+# self def
+/precheck
+/img_output
+*.py

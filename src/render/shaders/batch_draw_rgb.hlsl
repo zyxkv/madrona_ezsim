@@ -123,7 +123,7 @@ void vert(in uint vid : SV_VertexID,
     v2f.worldNormal = rotateVec(instance_data.rotation, vert.normal);
     v2f.worldIdx = instance_data.worldID;
     v2f.viewIdx = draw_data.viewID;
-    v2f.objectIdx = draw_data.objectID;
+    v2f.objectIdx = instance_data.objectID;
 
     if (instance_data.matID == -2) {
         v2f.materialIdx = -2;
@@ -272,7 +272,7 @@ PixelOutput frag(in V2F v2f,
 
     float3 normal = normalize(v2f.worldNormal);
 
-    if (!renderOptions.outputs[0]) {
+    if (renderOptions.outputs[0]==0) {
         output.rgbOut = float4(0.0, 0.0, 0.0, 1.0);
     }
     else {
@@ -318,11 +318,11 @@ PixelOutput frag(in V2F v2f,
         }
     }
 
-    if (renderOptions.outputs[2]) {
+    if (renderOptions.outputs[2]>0) {
         output.normalOut = float4(0.5 * (normal + 1.0), 1.0);
     }
 
-    if (renderOptions.outputs[3]) {
+    if (renderOptions.outputs[3]>0) {
         output.segmentationOut = v2f.objectIdx;
     }
 

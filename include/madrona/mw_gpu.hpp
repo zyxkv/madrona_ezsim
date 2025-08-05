@@ -73,11 +73,13 @@ struct CompileConfig {
 };
 
 struct CudaBatchRenderConfig {
-    // Until we support custom rendering functions, for now we must toggle
-    // between rendering color or depth.
+    // Until we support custom rendering functions
+    // for now we must toggle between rendering color or depth.
     enum class RenderMode : uint32_t {
         RGBD,
         Depth,
+        Normal,
+        Segmentation,
     };
 
     RenderMode renderMode;

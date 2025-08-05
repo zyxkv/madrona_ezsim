@@ -273,7 +273,7 @@ static HeapArray<uint32_t> hlslToSPV(
         L"-T", stage_type_str,
         L"-HV", L"2021",
         L"-enable-16bit-types",
-        L"-fspv-preserve-bindings",
+        //L"-fspv-preserve-bindings",  // Disabled due to DXC version compatibility
 #ifdef SHADER_DEBUG
         L"-fspv-reflect",
         L"-O0",  // Disable optimization

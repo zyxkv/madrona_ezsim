@@ -15,6 +15,7 @@
 
 #include <madrona/render/render_mgr.hpp>
 
+
 namespace madrona::render {
 
 struct RenderContext;
